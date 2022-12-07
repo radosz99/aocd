@@ -1,2 +1,0 @@
-class AOCDException(Exception):
-    pass
