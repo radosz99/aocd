@@ -5,8 +5,7 @@ def a(input):
     for line in input.splitlines():
         cycle_counter += 1
         if "addx" in line:
-            if cycle_counter in [20, 60, 100, 140, 180, 220]:
-                total_sum += cycle_counter * signal_value
+            total_sum += (cycle_counter * signal_value if cycle_counter in [20, 60, 100, 140, 180, 220] else 0)
             cycle_counter += 1
             signal_value += int(line.split()[1])
         total_sum += (cycle_counter * signal_value if cycle_counter in [20, 60, 100, 140, 180, 220] else 0)
