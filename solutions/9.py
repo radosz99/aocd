@@ -4,15 +4,9 @@ class Coordinates:
         self.y = y
 
     def move_to_become_neighbor(self, other):
-        if abs(self.x - other.x) == 2 and abs(self.y - other.y) == 2:
-            self.x = self.x + int((other.x - self.x) / 2)
-            self.y = self.y + int((other.y - self.y) / 2)
-        elif abs(self.x - other.x) == 2:
-            self.x = self.x + int((other.x - self.x) / 2)
-            self.y = other.y
-        elif abs(self.y - other.y) == 2:
-            self.x = other.x
-            self.y = self.y + int((other.y - self.y) / 2)
+        if abs(self.x - other.x) == 2 or abs(self.y - other.y) == 2:
+            self.x += (0 if self.x == other.x else (other.x - self.x) // abs(other.x - self.x))
+            self.y += (0 if self.y == other.y else (other.y - self.y) // abs(other.y - self.y))
 
 
 def solve(size, input):
