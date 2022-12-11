@@ -5,11 +5,9 @@ get_numbers = lambda a: list(map(int, re.findall('\d+', a)))
 
 class Monkey:
     def __init__(self, input, divider):
-        self.items = get_numbers(input[1])
-        self.operation = input[2].split('= ')[-1]
-        self.test = get_numbers(input[3])[0]
-        self.true_monkey = get_numbers(input[4])[0]
-        self.false_monkey = get_numbers(input[5])[0]
+        self.items = get_numbers(next(input))
+        self.operation = next(input).split('= ')[-1]
+        self.test, self.true_monkey, self.false_monkey = [get_numbers(next(input))[0] for _ in range(3)]
         self.inspection_number = 0
         self.divider = divider
 
@@ -23,7 +21,7 @@ class Monkey:
 
 
 def solve(input, rounds, divider):
-    monkeys = [Monkey(monkey.split('\n'), divider=divider) for monkey in input.split("\n\n")]
+    monkeys = [Monkey(iter(monkey.split('\n')[1:]), divider=divider) for monkey in input.split("\n\n")]
     modulo = prod(monkey.test for monkey in monkeys)
     [[monkey.proceed_with_items(monkeys, modulo) for monkey in monkeys] for _ in range(rounds)]
     inspections = sorted([monkey.inspection_number for monkey in monkeys], reverse=True)
