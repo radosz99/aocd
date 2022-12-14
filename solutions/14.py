@@ -21,6 +21,20 @@ def draw_path(grid, list_of_coords):
         draw_rocks(grid, list_of_coords[counter], generate_deltas(diff))
 
 
+def pour_sand(grid):
+    coords = (500, 0)
+    while True:
+        if grid[coords[0]][coords[1] + 1] == '.':
+            coords = (coords[0], coords[1] + 1)
+            continue
+        elif grid[coords[0] - 1][coords[1] + 1] == '.':
+            coords = (coords[0] - 1, coords[1] + 1)
+            continue
+        elif grid[coords[0] + 1][coords[1] + 1] == '.':
+            coords = (coords[0] + 1, coords[1] + 1)
+            continue
+        return coords
+
 def a(input):
     grid = {}
     lists_of_coords = []
@@ -36,25 +50,13 @@ def a(input):
     for list_of_coords in lists_of_coords:
         draw_path(grid, list_of_coords)
     counter = 0
-
-    while True:
-        coords = (500, 0)
+    try:
         while True:
-            if coords[0] == list(grid.keys())[0] or coords[1] == len(grid[500])-1:
-                return counter
-            if grid[coords[0]][coords[1]+1] == '.':
-                coords = (coords[0], coords[1]+1)
-                continue
-            elif grid[coords[0]-1][coords[1]+1] == '.':
-                coords = (coords[0]-1, coords[1]+1)
-                continue
-            elif grid[coords[0]+1][coords[1]+1] == '.':
-                coords = (coords[0]+1, coords[1]+1)
-                continue
-            break
-        grid[coords[0]][coords[1]] = 'o'
-        counter += 1
-
+            coords = pour_sand(grid)
+            grid[coords[0]][coords[1]] = 'o'
+            counter += 1
+    except (KeyError, IndexError):
+        return counter
 
 def b(input):
     grid = {}
@@ -68,20 +70,10 @@ def b(input):
 
     for list_of_coords in lists_of_coords:
         draw_path(grid, list_of_coords)
+
     counter = 0
     while True:
-        coords = (500, 0)
-        while True:
-            if grid[coords[0]][coords[1]+1] == '.':
-                coords = (coords[0], coords[1]+1)
-                continue
-            elif grid[coords[0]-1][coords[1]+1] == '.':
-                coords = (coords[0]-1, coords[1]+1)
-                continue
-            elif grid[coords[0]+1][coords[1]+1] == '.':
-                coords = (coords[0]+1, coords[1]+1)
-                continue
-            break
+        coords = pour_sand(grid)
         grid[coords[0]][coords[1]] = 'o'
         counter += 1
         if coords == (500, 0):
