@@ -1,5 +1,4 @@
 from sympy import sympify, solve
-import contextlib
 
 
 class Monkey:
@@ -40,10 +39,8 @@ def b(input):
 
     current_monkey = 'root'
     expected_number = monkeys[current_monkey].first_value or monkeys[current_monkey].second_value
-    try:
-        while True:
-            current_monkey = monkeys[current_monkey].get_monkey_without_calculated_number()
-            expected_number = monkeys[current_monkey].solve_equation(expected_number)
-    except IndexError:
-        return expected_number
-
+    while True:
+        current_monkey = monkeys[current_monkey].get_monkey_without_calculated_number()
+        if current_monkey == 'humn':
+            return expected_number
+        expected_number = monkeys[current_monkey].solve_equation(expected_number)
