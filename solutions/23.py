@@ -4,47 +4,44 @@ class Elf:
         self.y = y
 
 
-def get_destination_proposition(round_number, grid, elf):
+def check_if_no_elf_in_coordinates(coordinates_to_check, elves):
+    return all((elf.x, elf.y) not in coordinates_to_check for elf in elves)
+
+def get_destination_proposition(round_number, elves, elf):
     directions = ['N', 'S', 'W', 'E'] * 2
     x, y = elf.x, elf.y
 
-    if '#' not in [grid[x][y + 1], grid[x - 1][y], grid[x + 1][y], grid[x - 1][y - 1], grid[x - 1][y + 1],
-                   grid[x][y - 1], grid[x + 1][y - 1], grid[x + 1][y + 1]]:
-        return -1, -1
+    coordinates_to_check = [(x, y+1), (x, y-1), (x-1, y), (x+1,y), (x-1,y-1), (x-1,y+1), (x+1,y+1),(x+1,y-1)]
+    if check_if_no_elf_in_coordinates(coordinates_to_check, elves):
+        return None, None
 
     for direction in directions[round_number % 4: round_number % 4 + 4]:
-        if direction == 'N' and '#'not in [grid[x-1][y-1], grid[x-1][y], grid[x-1][y+1]]:
+        if direction == 'N' and check_if_no_elf_in_coordinates([(x-1, y-1), (x-1, y), (x-1, y+1)], elves):
             return x - 1, y
-        elif direction == 'S' and '#'not in [grid[x+1][y-1], grid[x+1][y], grid[x+1][y+1]]:
+        elif direction == 'S' and check_if_no_elf_in_coordinates([(x+1, y-1), (x+1, y), (x+1, y+1)], elves):
             return x + 1, y
-        elif direction == 'W' and '#'not in [grid[x+1][y-1], grid[x][y-1], grid[x-1][y-1]]:
+        elif direction == 'W' and check_if_no_elf_in_coordinates([(x+1, y-1), (x, y-1), (x-1, y-1)], elves):
             return x, y - 1
-        elif direction == 'E' and '#'not in [grid[x+1][y+1], grid[x][y+1], grid[x-1][y+1]]:
+        elif direction == 'E' and check_if_no_elf_in_coordinates([(x+1, y+1), (x, y+1), (x-1, y+1)], elves):
             return x, y + 1
     return x, y
 
-def a(input):
-    n = 1000
-    rounds = 10
-    grid = [(['.'] * n) + [*line] + (['.'] * n) for line in input.splitlines()]
-    grid = [['.'] * len(grid[0]) for _ in range(n)] + grid + [['.'] * len(grid[0]) for _ in range(n)]
-
-    elves = []
-    for i, row in enumerate(grid):
-        elves.extend([Elf(i, index) for index, elem in enumerate(row) if elem == '#'])
-
+def run(input, b=False, rounds=10):
+    rounds = rounds
+    elves = [Elf(row_index, col_index) for row_index, row in enumerate([[*line] for line in input.splitlines()]) for col_index, item in enumerate(row) if item == '#']
     for i in range(rounds):
-        proposition_list = [get_destination_proposition(i, grid, elf) for elf in elves]
-        # if all([proposition == (-1, -1) for proposition in proposition_list]):
-        #     return i + 1
+        proposition_list = [get_destination_proposition(i, elves, elf) for elf in elves]
+        if b and all([proposition == (None, None) for proposition in proposition_list]):
+            return i + 1
         for index, elf in enumerate(elves):
             prop_x, prop_y = proposition_list[index]
-            if prop_x >= 0 and prop_y >= 0 and proposition_list.count((prop_x, prop_y)) == 1:
-                grid[elf.x][elf.y] = '.'
+            if prop_x is not None and prop_y is not None and proposition_list.count((prop_x, prop_y)) == 1:
                 elf.x, elf.y = prop_x, prop_y
-                grid[elf.x][elf.y] = '#'
     xs, ys = [elf.x for elf in elves], [elf.y for elf in elves]
-    new_grid = [row[min(ys):max(ys)+1] for row in grid[min(xs):max(xs)+1]]
-    return [item for sublist in new_grid for item in sublist].count('.')
+    return (max(xs) - min(xs)+1) * (max(ys)-min(ys)+1) - len(elves)
 
+def a(input):
+    return run(input)
 
+def b(input):
+    return run(input, b=True, rounds=10000)
